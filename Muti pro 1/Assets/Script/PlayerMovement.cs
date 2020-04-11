@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviourPun,IPunObservable
 {
     public float moveSpeed = 5f;
 
@@ -12,13 +13,40 @@ public class PlayerMovement : MonoBehaviour
     Vector2 movement;
     Vector2 mousePos;
 
+    Vector3 correctPos;
+
+    private void Start()
+    {
+        cam = FindObjectOfType<Camera>();
+    }
+
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(this.transform.position);
+        }
+        else if (stream.IsReading)
+        {
+            correctPos = (Vector3)stream.ReceiveNext();
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        movement.x = Input.GetAxisRaw("Horizontal");
-        movement.y = Input.GetAxisRaw("Vertical");
+        if (photonView.IsMine)
+        {
+            movement.x = Input.GetAxisRaw("Horizontal");
+            movement.y = Input.GetAxisRaw("Vertical");
 
-        mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+            mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+        }
+        else
+        {
+            this.transform.position = correctPos;
+        }
+       
     }
 
     private void FixedUpdate()

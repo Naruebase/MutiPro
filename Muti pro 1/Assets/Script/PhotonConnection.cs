@@ -11,9 +11,91 @@ public class PhotonConnection : MonoBehaviourPunCallbacks
 
     private GameObject myCharacter;
 
+    private List<string> roomNameList = new List<string>();
+
+    public enum RoomState
+    {
+        None,
+        Connected,
+        JoinedLobby,
+        JoinedRoom,
+        RoleCreate,
+        RoleJoin,
+    }
+
+    public RoomState roomState;
+    public string inputRoomName;
+    public string inputPlayName;
+
+    private void OnGUI()
+    {
+        switch (roomState)
+        {
+            case RoomState.JoinedLobby:
+            {
+                inputPlayName = GUILayout.TextField(inputPlayName);
+
+                if(GUILayout.Button("Create Room"))
+                {
+                    roomState = RoomState.RoleCreate;
+                }
+                if(GUILayout.Button("Join Room"))
+                {
+                    roomState = RoomState.RoleJoin;
+                }
+                break;
+            }
+            case RoomState.RoleCreate:
+            {
+                    inputRoomName = GUILayout.TextField(inputRoomName);
+
+                    if (GUILayout.Button("Create"))
+                    {
+                        PhotonNetwork.CreateRoom(inputRoomName);
+                    }
+                    break;
+            }
+            case RoomState.RoleJoin:
+            {
+                foreach(var roomName in roomNameList)
+                    {
+                        if (GUILayout.Button(roomName))
+                        {
+                            PhotonNetwork.JoinRoom(roomName);
+                        }
+                    }
+                break;
+            }
+            case RoomState.JoinedRoom:
+            {
+                GUILayout.TextArea(PhotonNetwork.CurrentRoom.Name);
+                GUILayout.TextArea(PhotonNetwork.GetPing().ToString());
+                GUILayout.TextArea(PhotonNetwork.CurrentRoom.PlayerCount.ToString());
+
+                if (GUILayout.Button("Exit"))
+                {
+                    roomState = RoomState.JoinedLobby;
+                    PhotonNetwork.LeaveRoom();
+                }
+
+                break;
+            }
+            default:
+            {
+                if(GUILayout.Button("Connect to Server"))
+                {
+                    StartCoroutine(Connect());
+                }
+                break;
+            }
+
+        }
+    }
+
+
     private void Start()
     {
-        StartCoroutine(Connect());
+        //StartCoroutine(Connect());
     }
 
     IEnumerator Connect()
@@ -25,6 +107,8 @@ public class PhotonConnection : MonoBehaviourPunCallbacks
             yield return null;
         }
 
+        roomState = RoomState.Connected;
+
         PhotonNetwork.JoinLobby();
 
     }
@@ -35,10 +119,7 @@ public class PhotonConnection : MonoBehaviourPunCallbacks
 
         Debug.Log("OnJoinedLobby");
 
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 4;
-        roomOptions.IsOpen = true;
-        PhotonNetwork.JoinOrCreateRoom("TEST", roomOptions, TypedLobby.Default);
+        roomState = RoomState.JoinedLobby;
     }
 
     public override void OnJoinedRoom()
@@ -47,6 +128,23 @@ public class PhotonConnection : MonoBehaviourPunCallbacks
 
         Debug.Log("OnjoinedRoom");
 
+        roomState = RoomState.JoinedRoom;
+
         myCharacter = PhotonNetwork.Instantiate(characterPrefName, spawnPoint.position, spawnPoint.rotation);
+
+        var myCharacterMove = myCharacter.GetComponent<PlayerController>();
+        myCharacterMove.SetPlayerName(inputPlayName);
+    }
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        base.OnRoomListUpdate(roomList);
+
+        roomNameList.Clear();
+
+        for (int i = 0; i < roomList.Count; i++)
+        {
+            roomNameList.Add(roomList[i].Name);
+        }
     }
 }

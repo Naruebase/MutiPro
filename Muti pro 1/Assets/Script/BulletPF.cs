@@ -6,6 +6,7 @@ using Photon.Pun;
 public class BulletPF : MonoBehaviourPun
 {
     public float speed = 20f;
+    public float damage = 10f;
 
     private float countTime;
 
@@ -28,6 +29,7 @@ public class BulletPF : MonoBehaviourPun
     {
         if (collision.gameObject.GetComponent<PlayerMovement>())
         {
+            collision.gameObject.GetComponent<PlayerMovement>().TakeDamage(damage);
             Destroy(this.gameObject);
         }
     }

@@ -8,7 +8,10 @@ public class PlayerMovement : MonoBehaviourPun,IPunObservable
     public float moveSpeed = 5f;
 
     public Rigidbody2D myRB;
-    public Camera cam;
+
+    public string playerName;
+    public float hp = 100f;
+    public TextMesh playerNameText;
 
     Vector2 movement;
     Vector2 mousePos;
@@ -17,7 +20,7 @@ public class PlayerMovement : MonoBehaviourPun,IPunObservable
 
     private void Start()
     {
-        cam = FindObjectOfType<Camera>();
+        myRB = this.GetComponent<Rigidbody2D>();
     }
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -25,10 +28,12 @@ public class PlayerMovement : MonoBehaviourPun,IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(this.transform.position);
+            stream.SendNext(playerName);
         }
         else if (stream.IsReading)
         {
             correctPos = (Vector3)stream.ReceiveNext();
+            playerNameText.text = (string)stream.ReceiveNext();
         }
     }
 
@@ -37,10 +42,8 @@ public class PlayerMovement : MonoBehaviourPun,IPunObservable
     {
         if (photonView.IsMine)
         {
-            movement.x = Input.GetAxisRaw("Horizontal");
-            movement.y = Input.GetAxisRaw("Vertical");
-
-            mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            movement = moveInput.normalized * moveSpeed;
         }
         else
         {
@@ -51,10 +54,31 @@ public class PlayerMovement : MonoBehaviourPun,IPunObservable
 
     private void FixedUpdate()
     {
-        myRB.MovePosition(myRB.position + movement * moveSpeed * Time.fixedDeltaTime);
+        myRB.MovePosition(myRB.position + movement * Time.fixedDeltaTime);
+    }
 
-        Vector2 lookDir = mousePos - myRB.position;
-        float angle = Mathf.Atan2(lookDir.y,lookDir.x) * Mathf.Rad2Deg;
-        myRB.rotation = angle;
+    public void SetPlayerName(string newName)
+    {
+        if (photonView.IsMine)
+        {
+            playerName = newName;
+            playerNameText.text = playerName;
+        }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        photonView.RPC("RPCTakeDamage", RpcTarget.All, damage);
+    }
+
+    [PunRPC]
+    public void RPTakeDamage(float damage)
+    {
+        hp -= damage;
+
+        if(hp <= 0)
+        {
+            hp = 0;
+        }
     }
 }

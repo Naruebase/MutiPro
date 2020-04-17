@@ -10,6 +10,9 @@ public class PhotonConnection : MonoBehaviourPunCallbacks
     public Transform spawnPoint;
 
     private GameObject myCharacter;
+    public GameObject ObjCamera;
+    public CameraFollow cameraFollow;
+    public Fire fire;
 
     private List<string> roomNameList = new List<string>();
 
@@ -132,6 +135,14 @@ public class PhotonConnection : MonoBehaviourPunCallbacks
 
         myCharacter = PhotonNetwork.Instantiate(characterPrefName, spawnPoint.position, spawnPoint.rotation);
 
+        Parent(myCharacter, ObjCamera);
+
+        cameraFollow.FindTransform();
+
+        fire = FindObjectOfType<Fire>();
+
+        fire.FindTransform();
+
         var myCharacterMove = myCharacter.GetComponent<PlayerController>();
         myCharacterMove.SetPlayerName(inputPlayName);
     }
@@ -146,5 +157,10 @@ public class PhotonConnection : MonoBehaviourPunCallbacks
         {
             roomNameList.Add(roomList[i].Name);
         }
+    }
+
+    void Parent(GameObject parentOb, GameObject childOb)
+    {
+        childOb.transform.parent = parentOb.transform;
     }
 }

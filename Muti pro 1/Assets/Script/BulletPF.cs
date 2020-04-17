@@ -27,9 +27,9 @@ public class BulletPF : MonoBehaviourPun
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.GetComponent<PlayerMovement>())
+        if (collision.gameObject.GetComponent<PlayerController>())
         {
-            collision.gameObject.GetComponent<PlayerMovement>().TakeDamage(damage);
+            collision.gameObject.GetComponent<PlayerController>().TakeDamage(damage);
             Destroy(this.gameObject);
         }
     }

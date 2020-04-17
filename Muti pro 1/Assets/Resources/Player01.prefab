@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 5735298189720293598}
   - component: {fileID: 6361026484635885578}
   - component: {fileID: -809772856998700168}
+  - component: {fileID: 1392222780030483931}
   m_Layer: 0
   m_Name: Player01
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -127,7 +128,7 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   ObservedComponents:
-  - {fileID: -809772856998700168}
+  - {fileID: 1392222780030483931}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -164,6 +165,21 @@ MonoBehaviour:
   hp: 100
   playerNameText: {fileID: 2174331189191482705}
   playerHpText: {fileID: 0}
+  canControl: 0
+--- !u!114 &1392222780030483931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36733111059723412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a56f100c696d1cb4984b7fa26098d89e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: -809772856998700168}
+  fire: {fileID: 4575847394530775006}
 --- !u!1 &4745695345974391238
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,9 +284,9 @@ GameObject:
   - component: {fileID: 2484936933066401910}
   - component: {fileID: 7679907977871944479}
   - component: {fileID: 4575847394530775006}
-  - component: {fileID: 5133803677517801066}
+  - component: {fileID: 5753732698025242564}
   m_Layer: 0
-  m_Name: survivor-idle_shotgun_0
+  m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -355,7 +371,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   muzzle: {fileID: 8091436592994527547}
   cam: {fileID: 0}
---- !u!114 &5133803677517801066
+  canControl: 0
+  canFind: 0
+--- !u!114 &5753732698025242564
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

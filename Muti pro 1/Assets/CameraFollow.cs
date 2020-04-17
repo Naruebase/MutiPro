@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
+    bool canFind = true;
+    public GameObject player;
     public Transform playerTransform;
     public float speed;
 
@@ -11,12 +13,6 @@ public class CameraFollow : MonoBehaviour
     public float maxX;
     public float minY;
     public float maxY;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        transform.position = playerTransform.position;
-    }
 
     // Update is called once per frame
     void Update()
@@ -28,5 +24,17 @@ public class CameraFollow : MonoBehaviour
 
             transform.position = Vector2.Lerp(transform.position, new Vector2(clampedX,clampedY), speed);
         }
+    }
+
+    public void FindTransform()
+    {
+        if (canFind == true)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+            playerTransform = player.transform;
+            transform.position = playerTransform.position;
+            canFind = false;
+        } 
+       
     }
 }

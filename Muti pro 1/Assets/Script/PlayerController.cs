@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
-public class PlayerController : MonoBehaviourPun/*, IPunObservable*/
+public class PlayerController : MonoBehaviourPun
 {
     public float moveSpeed = 5f;
 
@@ -17,38 +17,21 @@ public class PlayerController : MonoBehaviourPun/*, IPunObservable*/
     public TextMesh playerNameText;
     public TextMesh playerHpText;
 
+    public bool canControl;
+
     // Start is called before the first frame update
     void Start()
     {
         myRB = this.GetComponent<Rigidbody2D>();
     }
 
-    /*void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(this.transform.position);
-            stream.SendNext(playerName);
-        }
-        else if (stream.IsReading)
-        {
-            correctPos = (Vector3)stream.ReceiveNext();
-            playerNameText.text = (string)stream.ReceiveNext();
-        }
-    }*/
-
     // Update is called once per frame
     void Update()
     {
-        /*if (photonView.IsMine)
-        {*/
-            Vector2 moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            movement = moveInput.normalized * moveSpeed;
-       /*}
-        else
-        {
-            this.transform.position = correctPos;
-        }*/
+        if (canControl == false)
+            return;
+        Vector2 moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        movement = moveInput.normalized * moveSpeed;
     }
 
     private void FixedUpdate()
@@ -65,7 +48,7 @@ public class PlayerController : MonoBehaviourPun/*, IPunObservable*/
         }
     }
 
-    /*public void TakeDamage(float damage)
+    public void TakeDamage(float damage)
     {
         photonView.RPC("RPCTakeDamage", RpcTarget.All, damage);
     }
@@ -81,5 +64,5 @@ public class PlayerController : MonoBehaviourPun/*, IPunObservable*/
         }
 
         playerHpText.text = hp.ToString("0");
-    }*/
+    }
 }
